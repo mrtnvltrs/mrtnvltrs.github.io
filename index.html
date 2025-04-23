@@ -5,22 +5,27 @@
     <title>Martinovo web</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f0f8ff;
         }
         header {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .burger {
-            font-size: 30px;
+            font-size: 32px;
             cursor: pointer;
-            user-select: none;
+            transition: transform 0.3s;
+        }
+        .burger:hover {
+            transform: scale(1.1);
         }
         nav {
             position: fixed;
@@ -28,40 +33,81 @@
             right: -200px;
             width: 200px;
             height: 100%;
-            background-color: #333;
-            color: white;
-            padding-top: 60px;
-            transition: right 0.3s;
+            background: rgba(51, 51, 51, 0.95);
+            backdrop-filter: blur(5px);
+            padding-top: 70px;
+            transition: right 0.3s ease-in-out;
         }
         nav a {
             display: block;
             color: white;
-            padding: 10px 20px;
+            padding: 15px 25px;
             text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
         nav a:hover {
-            background-color: #575757;
-        }
-        nav.open {
-            right: 0;
+            background: #575757;
+            border-left-color: #4CAF50;
+            padding-left: 30px;
         }
         main {
-            padding: 20px;
+            padding: 30px;
             max-width: 800px;
             margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         img {
             max-width: 100%;
             height: auto;
-            display: block;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .intro-text {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            line-height: 1.8;
+        }
+        .hobbies-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .hobbies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .hobby-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .hobby-card:hover {
+            transform: translateY(-5px);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #4CAF50;
+            color: white;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Martinovo web</h1>
+    <h1>Martinovo webové portfolio</h1>
     <div class="burger" id="burger">&#9776;</div>
 </header>
 
@@ -69,13 +115,44 @@
     <a href="#">Domů</a>
     <a href="#">O mně</a>
     <a href="#">Fotky</a>
+    <a href="#">Projekty</a>
     <a href="#">Kontakt</a>
 </nav>
 
 <main>
-    <img src="DOPLNIM FOTKU" alt="Moje fotka">
-    <p>Ahoj! Jsem student IT v Nera a toto je moje první jednoduchá webová stránka. Rád dlouho spim a nemam rad programování <3 .</p>
+    <img src="DOPLNIM_FOTKU.jpg" alt="Profilová fotka">
+    
+    <div class="intro-text">
+        <p>Ahoj! Jsem student IT v Neratovicích se zaměřením na počítačové sítě. 
+        I když programování není moje největší láska, rád řeším technické výzvy 
+        a učím se novým dovednostem.</p>
+        
+        <p>Ve volném čase mě najdeš na kole v okolí Mělníka nebo při objevování 
+        nových turistických tras. Rád trávím čas s přáteli a poznávám nová místa.</p>
+    </div>
+
+    <div class="hobbies-section">
+        <h2>Moje zájmy</h2>
+        <div class="hobbies-grid">
+            <div class="hobby-card">
+                <h3>🚴 Cyklistika</h3>
+                <p>Pravidelné vyjížďky podél Labe a objevování nových tras</p>
+            </div>
+            <div class="hobby-card">
+                <h3>🏞️ Turistika</h3>
+                <p>Výlety do české přírody a návštěvy hradů v okolí</p>
+            </div>
+            <div class="hobby-card">
+                <h3>💻 Technologie</h3>
+                <p>Práce s počítačovými sítěmi a základní programování</p>
+            </div>
+        </div>
+    </div>
 </main>
+
+<footer>
+    &copy; 2023 Martinovo portfolio | Vytvořeno s ❤️
+</footer>
 
 <script>
     const burger = document.getElementById('burger');
@@ -83,6 +160,13 @@
 
     burger.addEventListener('click', () => {
         menu.classList.toggle('open');
+    });
+
+    // Zavírání menu klikem mimo
+    document.addEventListener('click', (e) => {
+        if(!menu.contains(e.target) && !burger.contains(e.target)) {
+            menu.classList.remove('open');
+        }
     });
 </script>
 
