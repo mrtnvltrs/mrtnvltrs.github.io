@@ -2,173 +2,244 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Martinovo web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Můj Profil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary: #10a37f;
+            --bg: #ffffff;
+            --text: #1a1a1a;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f0f8ff;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header s animací */
         header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 15px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        /* Burger menu */
+        .burger-menu {
+            position: fixed;
+            right: 1rem;
+            top: 1rem;
+            z-index: 1001;
+            cursor: pointer;
+            display: none;
+        }
+
+        .burger-line {
+            width: 25px;
+            height: 3px;
+            background: var(--text);
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        /* Navigace */
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .burger {
-            font-size: 32px;
-            cursor: pointer;
-            transition: transform 0.3s;
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
         }
-        .burger:hover {
-            transform: scale(1.1);
-        }
-        nav {
-            position: fixed;
-            top: 0;
-            right: -200px;
-            width: 200px;
-            height: 100%;
-            background: rgba(51, 51, 51, 0.95);
-            backdrop-filter: blur(5px);
-            padding-top: 70px;
-            transition: right 0.3s ease-in-out;
-        }
-        nav a {
-            display: block;
-            color: white;
-            padding: 15px 25px;
+
+        .nav-links a {
             text-decoration: none;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
+            color: var(--text);
+            font-weight: 600;
+            transition: color 0.3s ease;
         }
-        nav a:hover {
-            background: #575757;
-            border-left-color: #4CAF50;
-            padding-left: 30px;
+
+        /* Responsivita */
+        @media (max-width: 768px) {
+            .burger-menu {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                right: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: var(--bg);
+                width: 70%;
+                height: calc(100vh - 70px);
+                padding: 2rem;
+                transition: right 0.3s ease;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .burger-menu.active .burger-line:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .burger-menu.active .burger-line:nth-child(2) {
+                opacity: 0;
+            }
+
+            .burger-menu.active .burger-line:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -6px);
+            }
         }
+
+        /* Detekce OS */
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        body[data-os="windows"]::after {
+            background-image: url('windows-icon.svg');
+        }
+
+        body[data-os="macos"]::after {
+            background-image: url('apple-icon.svg');
+        }
+
+        /* Hlavní obsah */
         main {
-            padding: 30px;
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 100px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin: 20px 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+        /* Animace */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
         }
-        .intro-text {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #4CAF50;
-            line-height: 1.8;
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in forwards;
         }
-        .hobbies-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .hobbies-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .hobby-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-        .hobby-card:hover {
-            transform: translateY(-5px);
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #4CAF50;
-            color: white;
-            margin-top: 40px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-
-<header>
-    <h1>Martinovo webové portfolio</h1>
-    <div class="burger" id="burger">&#9776;</div>
-</header>
-
-<nav id="menu">
-    <a href="#">Domů</a>
-    <a href="#">O mně</a>
-    <a href="#">Fotky</a>
-    <a href="#">Projekty</a>
-    <a href="#">Kontakt</a>
-</nav>
-
-<main>
-    <img src="DOPLNIM_FOTKU.jpg" alt="Profilová fotka">
+    <div class="burger-menu">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+    </div>
     
-    <div class="intro-text">
-        <p>Ahoj! Jsem student IT v Neratovicích se zaměřením na počítačové sítě. 
-        I když programování není moje největší láska, rád řeším technické výzvy 
-        a učím se novým dovednostem.</p>
-        
-        <p>Ve volném čase mě najdeš na kole v okolí Mělníka nebo při objevování 
-        nových turistických tras. Rád trávím čas s přáteli a poznávám nová místa.</p>
-    </div>
+    <header>
+        <nav>
+            <h1>Můj Profil</h1>
+            <ul class="nav-links">
+                <li><a href="#zajmy">Zájmy</a></li>
+                <li><a href="#cyklistika">Cyklistika</a></li>
+                <li><a href="#turistika">Turistika</a></li>
+                <li><a href="#technologie">Technologie</a></li>
+                <li><a href="#kontakt">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="hobbies-section">
-        <h2>Moje zájmy</h2>
-        <div class="hobbies-grid">
-            <div class="hobby-card">
-                <h3>🚴 Cyklistika</h3>
-                <p>Pravidelné vyjížďky podél Labe a objevování nových tras</p>
-            </div>
-            <div class="hobby-card">
-                <h3>🏞️ Turistika</h3>
-                <p>Výlety do české přírody a návštěvy hradů v okolí</p>
-            </div>
-            <div class="hobby-card">
-                <h3>💻 Technologie</h3>
-                <p>Práce s počítačovými sítěmi a hardware</p>
-            </div>
-        </div>
-    </div>
-</main>
+    <main>
+        <!-- Zde vložte obsah sekcí -->
+    </main>
 
-<footer>
-    &copy; 2025 Martinovo portfolio | Vytvořeno s ❤️
-</footer>
-
-<script>
-    const burger = document.getElementById('burger');
-    const menu = document.getElementById('menu');
-
-    burger.addEventListener('click', () => {
-        menu.classList.toggle('open');
-    });
-
-    // Zavírání menu klikem mimo
-    document.addEventListener('click', (e) => {
-        if(!menu.contains(e.target) && !burger.contains(e.target)) {
-            menu.classList.remove('open');
+    <script>
+        // Detekce OS
+        const detectOS = () => {
+            const userAgent = navigator.userAgent;
+            if (/windows/i.test(userAgent)) {
+                document.body.setAttribute('data-os', 'windows');
+            } else if (/macintosh|mac os x/i.test(userAgent)) {
+                document.body.setAttribute('data-os', 'macos');
+            }
         }
-    });
-</script>
+        detectOS();
 
+        // Burger menu
+        const burgerMenu = document.querySelector('.burger-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        burgerMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            burgerMenu.classList.toggle('active');
+        });
+
+        // Lazy loading obrázků
+        document.addEventListener("DOMContentLoaded", function() {
+            const lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
+            
+            if ("IntersectionObserver" in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove("lazy");
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
+        });
+
+        // Přidání animací při scrollování
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementBottom = element.getBoundingClientRect().bottom;
+                
+                if (elementTop < window.innerHeight && elementBottom > 0) {
+                    element.style.animation = 'fadeIn 0.5s ease-in forwards';
+                }
+            });
+        }
+
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll();
+    </script>
 </body>
 </html>
