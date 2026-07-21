@@ -8,6 +8,7 @@
     <style>
         :root {
             --primary: #10a37f;
+            --primary-dark: #0d8c6d;
             --bg: #ffffff;
             --text: #1a1a1a;
         }
@@ -76,6 +77,10 @@
             font-weight: 600;
             transition: color 0.3s ease;
         }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
 
         /* Responsivita */
         @media (max-width: 768px) {
@@ -141,6 +146,52 @@
             margin-left: auto;
             margin-right: auto;
         }
+        
+        /* Styl pro box ve výstavbě */
+        .construction-box {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 2px dashed #cbd5e1;
+            margin-top: 2rem;
+        }
+        
+        .construction-box h2 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .construction-box p {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(16, 163, 127, 0.2);
+        }
+
+        .cta-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 163, 127, 0.3);
+        }
 
         /* Animace */
         @keyframes slideDown {
@@ -167,19 +218,24 @@
     
     <header>
         <nav>
-            <h1>Můj Profil</h1>
+            <h1>Martinův Profil</h1>
             <ul class="nav-links">
-                <li><a href="stranka1.html">Odkaz 1</a></li>   //podstránky
-                <li><a href="stranka2.html">Odkaz 2</a></li>
-                <li><a href="stranka3.html">Odkaz 3</a></li>
-                <li><a href="stranka4.html">Odkaz 4</a></li>
-                <li><a href="stranka5.html">Odkaz 5</a></li>
+                <li><a href="innsbruck.html">🏔️ Innsbruck 2026</a></li>
+                <li><a href="#">Odkaz 2</a></li>
+                <li><a href="#">Odkaz 3</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-???
+        <div class="construction-box fade-in">
+            <h2>🚧 Web je ve výstavbě 🚧</h2>
+            <p>Na mém hlavním webu momentálně pracuji a připravuji pro vás nový obsah. Zatím se můžete podívat na již hotové projekty níže.</p>
+            
+            <a href="innsbruck.html" class="cta-button">
+                Otevřít vyúčtování a mapy Innsbruck
+            </a>
+        </div>
     </main>
 
     <script>
