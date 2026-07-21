@@ -21,12 +21,27 @@
         }
 
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; padding: 20px; line-height: 1.5; }
-        .container { max-width: 850px; margin: 0 auto; }
+        .container { max-width: 850px; margin: 0 auto; position: relative; }
         
+        /* Tlačítko Zpět */
+        .back-btn { position: absolute; top: 0; left: 0; text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 8px; transition: color 0.2s; padding: 10px; border-radius: 8px;}
+        .back-btn:hover { color: var(--primary); background: #e5e7eb;}
+
         /* Hlavička */
-        .header { text-align: center; margin-bottom: 25px; }
+        .header { text-align: center; margin-bottom: 25px; padding-top: 40px; } /* padding-top kvůli tlačítku zpět */
         .header h1 { color: var(--primary); font-size: 32px; margin: 0 0 10px 0; }
         .header p { color: var(--text-muted); margin: 0; font-size: 16px; }
+
+        /* Zabezpečení (Obrazovka s heslem) */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .login-box { background: var(--card); padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 10px;}
+        .login-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 15px;}
+        .login-input { width: 100%; padding: 14px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; margin-bottom: 15px; outline: none; transition: border-color 0.2s; box-sizing: border-box; text-align: center;}
+        .login-input:focus { border-color: var(--accent); }
+        .login-btn { width: 100%; padding: 14px; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .login-btn:hover { background: #172554; }
+        .login-error { color: #dc2626; font-size: 14px; margin-top: 15px; font-weight: bold; display: none; }
 
         /* Hlavní navigace aplikace */
         .main-nav { display: flex; gap: 10px; margin-bottom: 30px; background: #e5e7eb; padding: 6px; border-radius: 12px; }
@@ -118,13 +133,26 @@
             .tx-date { width: 100%; margin-bottom: 4px; font-size: 12px; }
             .tx-orig { display: block; width: 100%; text-align: left; margin-bottom: 4px; }
             .tx-czk { width: 100%; text-align: left; }
+            .back-btn { top: 10px; left: 10px; }
         }
     </style>
 </head>
 <body>
 
+<!-- OVERLAY PRO HESLO -->
+<div id="login-overlay">
+    <div class="login-box">
+        <h2><i class="fas fa-lock"></i> Soukromá stránka</h2>
+        <p>Pro zobrazení rodinného rozcestníku a financí zadejte heslo.</p>
+        <input type="password" id="password-input" class="login-input" placeholder="Zadejte heslo..." onkeypress="handleEnter(event)">
+        <button onclick="checkPassword()" class="login-btn">Odemknout</button>
+        <div id="login-error" class="login-error"><i class="fas fa-exclamation-triangle"></i> Nesprávné heslo!</div>
+    </div>
+</div>
+
 <div class="container">
     <div class="header">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Zpět na profil</a>
         <h1>🏔️ Innsbruck 2026</h1>
         <p>Rodinný rozcestník: Informace, navigace a vyúčtování</p>
     </div>
@@ -247,7 +275,35 @@
 </div>
 
 <script>
-    // Přepínání hlavních pohledů s opraveným eventem
+    // ==========================================
+    // LOGIKA PRO HESLO (Odemknutí stránky)
+    // ==========================================
+    const TAJNE_HESLO = "Kamosi22"; // <-- Zde můžeš změnit heslo
+
+    function checkPassword() {
+        const input = document.getElementById('password-input').value;
+        if (input === TAJNE_HESLO) {
+            document.getElementById('login-overlay').style.display = 'none';
+            sessionStorage.setItem('innsbruckUnlocked', 'true'); // Pamatuje si po dobu otevřeného panelu
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            checkPassword();
+        }
+    }
+
+    // Při opětovném načtení zkontroluje, jestli už uživatel nezadal heslo
+    if (sessionStorage.getItem('innsbruckUnlocked') === 'true') {
+        document.getElementById('login-overlay').style.display = 'none';
+    }
+    // ==========================================
+
+
+    // Přepínání hlavních pohledů
     function switchMainView(viewId, btnElement) {
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         if (btnElement) btnElement.classList.add('active');
@@ -300,7 +356,7 @@
 
     const formatCZK = (num) => num.toLocaleString('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kč';
 
-    // Filtrace a výpočet rozúčtování s opraveným eventem
+    // Filtrace a výpočet rozúčtování
     function filterPerson(personName, btnElement) {
         document.querySelectorAll('.tabs .tab-btn').forEach(b => b.classList.remove('active'));
         if (btnElement) btnElement.classList.add('active');
@@ -400,9 +456,7 @@
 
     // Bezpečné načtení dat hned po startu stránky
     window.onload = () => {
-        // Nejprve vložíme data do transakční tabulky (nezávisle na klikání)
         initBankTransactions(); 
-        // Poté inicializujeme základní zobrazení pro záložku 'Všichni'
         filterPerson('Všichni', document.querySelector('.tabs .tab-btn')); 
     };
 </script>
