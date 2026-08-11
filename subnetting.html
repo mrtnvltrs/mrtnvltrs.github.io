@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cisco Trenér: IP Adresace</title>
+    <title>Cisco Trenér: IP Adresace & VLSM</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
             color: #333;
-            max-width: 650px;
+            max-width: 900px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -29,46 +29,59 @@
             color: #666;
             margin-bottom: 25px;
         }
+        
+        /* Styly pro záložky (Tabs) */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+        }
+        .tab-btn {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover {
+            color: #0056b3;
+        }
+        .tab-btn.active {
+            color: #0056b3;
+            border-bottom: 3px solid #0056b3;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Společné styly pro obsah */
         .problem-box {
             background-color: #e9ecef;
             padding: 20px;
             border-radius: 8px;
             text-align: center;
             margin-bottom: 25px;
-            font-size: 1.3em;
-        }
-        #ip-task {
-            font-weight: bold;
-            color: #000;
             font-size: 1.2em;
         }
-        .input-group {
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        label {
-            font-weight: 600;
-            width: 45%;
-        }
-        input {
-            width: 50%;
-            padding: 10px;
-            border: 2px solid #ccc;
-            border-radius: 6px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            border-color: #0056b3;
-            outline: none;
+        .highlight {
+            font-weight: bold;
+            color: #d9534f;
+            font-size: 1.2em;
         }
         .buttons {
             text-align: center;
             margin-top: 25px;
         }
-        button {
+        button.action-btn {
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
@@ -79,11 +92,10 @@
             margin: 0 5px;
             transition: opacity 0.2s;
         }
-        button:hover {
-            opacity: 0.9;
-        }
-        #checkBtn { background-color: #28a745; }
-        #nextBtn { background-color: #007bff; display: none; }
+        button.action-btn:hover { opacity: 0.9; }
+        .btn-check { background-color: #28a745; }
+        .btn-next { background-color: #007bff; display: none; }
+        
         .feedback {
             margin-top: 20px;
             padding: 15px;
@@ -92,25 +104,72 @@
             display: none;
             white-space: pre-line;
             line-height: 1.5;
+            text-align: center;
         }
         .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        
-        /* Styly pro nápovědu */
+
+        /* Specifické styly pro Jednoduchý trénink */
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .input-group label { font-weight: 600; width: 45%; }
+        .input-group input {
+            width: 50%;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        /* Specifické styly pro VLSM Tabulku */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: bold;
+        }
+        td input {
+            width: 90%;
+            padding: 8px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        td input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Nápověda */
         .help-toggle {
             margin-top: 30px;
             text-align: center;
             color: #0056b3;
             font-weight: bold;
             cursor: pointer;
-            user-select: none;
             padding: 10px;
             border-radius: 6px;
             transition: background-color 0.2s;
         }
-        .help-toggle:hover {
-            background-color: #e9ecef;
-        }
+        .help-toggle:hover { background-color: #e9ecef; }
         .help-box {
             display: none;
             margin-top: 15px;
@@ -120,100 +179,162 @@
             border-radius: 6px;
             font-size: 0.95em;
             line-height: 1.6;
-        }
-        .help-box h3 {
-            margin-top: 0;
-            color: #856404;
-        }
-        .help-box code {
-            background-color: #ffe8a1;
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-weight: bold;
+            text-align: left;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Trenér Subnettingu</h1>
-    <p class="subtitle">Vypočítej parametry sítě pro zadanou IP adresu</p>
+    <h1>Subnetting & VLSM Trenér</h1>
+    <p class="subtitle">Připrav se na zkoušku drillem</p>
 
-    <div class="problem-box">
-        Zadaná IP adresa z hostitele:<br>
-        <span id="ip-task">Načítám...</span>
-    </div>
-
-    <div class="input-group">
-        <label for="net">Adresa sítě (Network):</label>
-        <input type="text" id="net" placeholder="např. 192.168.1.0">
-    </div>
-    <div class="input-group">
-        <label for="first">První využitelná IP:</label>
-        <input type="text" id="first" placeholder="např. 192.168.1.1">
-    </div>
-    <div class="input-group">
-        <label for="last">Poslední využitelná IP:</label>
-        <input type="text" id="last" placeholder="např. 192.168.1.62">
-    </div>
-    <div class="input-group">
-        <label for="bcast">Broadcast:</label>
-        <input type="text" id="bcast" placeholder="např. 192.168.1.63">
+    <!-- Záložky -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-single')">Jedna adresa</button>
+        <button class="tab-btn" onclick="openTab('tab-vlsm')">Celá VLSM Tabulka</button>
     </div>
 
-    <div class="buttons">
-        <button id="checkBtn" onclick="checkAnswers()">Zkontrolovat</button>
-        <button id="nextBtn" onclick="generateProblem()">Další příklad</button>
+    <!-- TÝM 1: JEDNODUCHÝ TRÉNINK (Původní) -->
+    <div id="tab-single" class="tab-content active">
+        <div class="problem-box">
+            Zadaná IP adresa z hostitele:<br>
+            <span id="ip-task" class="highlight">Načítám...</span>
+        </div>
+
+        <div class="input-group">
+            <label>Adresa sítě (Network):</label>
+            <input type="text" id="net" placeholder="např. 192.168.1.0">
+        </div>
+        <div class="input-group">
+            <label>První využitelná IP:</label>
+            <input type="text" id="first" placeholder="např. 192.168.1.1">
+        </div>
+        <div class="input-group">
+            <label>Poslední využitelná IP:</label>
+            <input type="text" id="last" placeholder="např. 192.168.1.62">
+        </div>
+        <div class="input-group">
+            <label>Broadcast:</label>
+            <input type="text" id="bcast" placeholder="např. 192.168.1.63">
+        </div>
+
+        <div class="buttons">
+            <button class="action-btn btn-check" id="checkBtnSingle" onclick="checkSingle()">Zkontrolovat</button>
+            <button class="action-btn btn-next" id="nextBtnSingle" onclick="generateSingle()">Další příklad</button>
+        </div>
+
+        <div id="feedbackSingle" class="feedback"></div>
+
+        <div class="help-toggle" onclick="toggleHelp()">🔍 Ukázat postup a nápovědu (Skoky)</div>
+        <div id="helpBox" class="help-box">
+            <p><em>Tahák skoků pro rychlou orientaci (odečítej od 256):</em><br>
+            <strong>/24</strong> = skok 256 | <strong>/25</strong> = skok 128 | <strong>/26</strong> = skok 64 | <strong>/27</strong> = skok 32 | <strong>/28</strong> = skok 16 | <strong>/29</strong> = skok 8 | <strong>/30</strong> = skok 4</p>
+        </div>
     </div>
 
-    <div id="feedback" class="feedback"></div>
+    <!-- TÝM 2: VLSM TRÉNINK (Nové) -->
+    <div id="tab-vlsm" class="tab-content">
+        <div class="problem-box" style="font-size: 1.1em; text-align: left;">
+            Firma dostala přidělený adresní blok: <span id="vlsm-base" class="highlight">Načítám...</span><br><br>
+            <strong>Rozděl tuto síť pomocí VLSM pro následující sítě (seřazeno od největší):</strong>
+            <ul style="margin-top:5px; margin-bottom: 0;">
+                <li><strong>LAN 1:</strong> Potřebuje 60 IP adres (vyber správný prefix)</li>
+                <li><strong>LAN 2:</strong> Potřebuje 30 IP adres</li>
+                <li><strong>LAN 3:</strong> Potřebuje 14 IP adres</li>
+                <li><strong>WAN 1:</strong> Potřebuje 2 IP adresy (propojení routerů)</li>
+            </ul>
+        </div>
 
-    <!-- Interaktivní nápověda -->
-    <div class="help-toggle" onclick="toggleHelp()">🔍 Ukázat postup a nápovědu</div>
-    <div id="helpBox" class="help-box">
-        <h3>Jak na to? (Krok za krokem)</h3>
-        <p>Představ si, že dostaneš zadanou IP adresu: <code>192.168.5.75 /26</code></p>
-        <ol>
-            <li><strong>Urči masku a velikost skoku:</strong> Prefix /26 znamená, že v posledním oktetu masky je hodnota 192 (255.255.255.192). Velikost skoku (magické číslo) spočítáš takto: <strong>256 - 192 = 64</strong>. Sítě tedy skáčou po 64 adresách.</li>
-            <li><strong>Najdi začátek sítě:</strong> Vypiš si násobky skoku: 0, 64, 128, 192. Zadaná IP adresa <code>.75</code> spadá do rozmezí mezi 64 a 127. Adresa tvé sítě je proto <code>192.168.5.64</code>.</li>
-            <li><strong>Urči první IP:</strong> To je vždy o 1 větší než adresa sítě. V našem případě: <code>192.168.5.65</code>.</li>
-            <li><strong>Urči Broadcast:</strong> Je to vždy o 1 menší adresa, než na které začíná DALŠÍ síť. Další síť začíná na 128 (64 + 64), takže Broadcast naší sítě je <code>192.168.5.127</code>.</li>
-            <li><strong>Urči poslední IP:</strong> To je vždy o 1 menší než Broadcast. V našem případě: <code>192.168.5.126</code>.</li>
-        </ol>
-        <p><em>Tahák skoků pro rychlou orientaci:</em><br>
-        /24 = skok 256<br>
-        /25 = skok 128<br>
-        /26 = skok 64<br>
-        /27 = skok 32<br>
-        /28 = skok 16<br>
-        /29 = skok 8<br>
-        /30 = skok 4</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Název</th>
+                    <th>Prefix</th>
+                    <th>Adresa sítě</th>
+                    <th>První IP</th>
+                    <th>Poslední IP</th>
+                    <th>Broadcast</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- LAN 1 -->
+                <tr>
+                    <td><strong>LAN 1</strong></td>
+                    <td><input type="text" id="p1" placeholder="/xx"></td>
+                    <td><input type="text" id="n1" placeholder="192.168.x.x"></td>
+                    <td><input type="text" id="f1"></td>
+                    <td><input type="text" id="l1"></td>
+                    <td><input type="text" id="b1"></td>
+                </tr>
+                <!-- LAN 2 -->
+                <tr>
+                    <td><strong>LAN 2</strong></td>
+                    <td><input type="text" id="p2" placeholder="/xx"></td>
+                    <td><input type="text" id="n2" placeholder="192.168.x.x"></td>
+                    <td><input type="text" id="f2"></td>
+                    <td><input type="text" id="l2"></td>
+                    <td><input type="text" id="b2"></td>
+                </tr>
+                <!-- LAN 3 -->
+                <tr>
+                    <td><strong>LAN 3</strong></td>
+                    <td><input type="text" id="p3" placeholder="/xx"></td>
+                    <td><input type="text" id="n3" placeholder="192.168.x.x"></td>
+                    <td><input type="text" id="f3"></td>
+                    <td><input type="text" id="l3"></td>
+                    <td><input type="text" id="b3"></td>
+                </tr>
+                <!-- WAN 1 -->
+                <tr>
+                    <td><strong>WAN 1</strong></td>
+                    <td><input type="text" id="p4" placeholder="/xx"></td>
+                    <td><input type="text" id="n4" placeholder="192.168.x.x"></td>
+                    <td><input type="text" id="f4"></td>
+                    <td><input type="text" id="l4"></td>
+                    <td><input type="text" id="b4"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="buttons">
+            <button class="action-btn btn-check" onclick="checkVLSM()">Zkontrolovat VLSM</button>
+            <button class="action-btn btn-next" style="display:inline-block; background-color:#6c757d;" onclick="generateVLSM()">Nové zadání</button>
+        </div>
+
+        <div id="feedbackVLSM" class="feedback"></div>
     </div>
 </div>
 
 <script>
+    // === LOGIKA PŘEPÍNÁNÍ ZÁLOŽEK ===
+    function openTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function toggleHelp() {
+        const helpBox = document.getElementById('helpBox');
+        helpBox.style.display = helpBox.style.display === "block" ? "none" : "block";
+    }
+
+    // === LOGIKA PRO JEDNODUCHÝ TRÉNINK ===
     let currentTask = {};
 
-    function generateProblem() {
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('checkBtn').style.display = 'inline-block';
-        document.getElementById('nextBtn').style.display = 'none';
-        document.getElementById('net').value = '';
-        document.getElementById('first').value = '';
-        document.getElementById('last').value = '';
-        document.getElementById('bcast').value = '';
+    function generateSingle() {
+        document.getElementById('feedbackSingle').style.display = 'none';
+        document.getElementById('checkBtnSingle').style.display = 'inline-block';
+        document.getElementById('nextBtnSingle').style.display = 'none';
+        ['net', 'first', 'last', 'bcast'].forEach(id => document.getElementById(id).value = '');
 
-        const octet1 = 192;
-        const octet2 = 168;
         const octet3 = Math.floor(Math.random() * 256);
         const randomIP = Math.floor(Math.random() * 256);
         const cidr = Math.floor(Math.random() * 7) + 24; 
-
-        const baseIP = `${octet1}.${octet2}.${octet3}`;
+        const baseIP = `192.168.${octet3}`;
         
-        const bitsForHosts = 32 - cidr;
-        const blockSize = Math.pow(2, bitsForHosts);
-        
+        const blockSize = Math.pow(2, 32 - cidr);
         const networkOctet = Math.floor(randomIP / blockSize) * blockSize;
         const broadcastOctet = networkOctet + blockSize - 1;
 
@@ -229,7 +350,7 @@
         document.getElementById('ip-task').innerText = currentTask.taskStr;
     }
 
-    function checkAnswers() {
+    function checkSingle() {
         const userNet = document.getElementById('net').value.trim();
         const userFirst = document.getElementById('first').value.trim();
         const userLast = document.getElementById('last').value.trim();
@@ -240,41 +361,96 @@
         
         if(userNet !== currentTask.network) isCorrect = false;
         errorMsg += `Adresa sítě: ${currentTask.network} (Skok je ${currentTask.skok})\n`;
-
         if(userFirst !== currentTask.first) isCorrect = false;
         errorMsg += `První IP: ${currentTask.first}\n`;
-
         if(userLast !== currentTask.last) isCorrect = false;
         errorMsg += `Poslední IP: ${currentTask.last}\n`;
-
         if(userBcast !== currentTask.broadcast) isCorrect = false;
         errorMsg += `Broadcast: ${currentTask.broadcast}`;
 
-        const feedbackEl = document.getElementById('feedback');
-        feedbackEl.style.display = 'block';
+        const fb = document.getElementById('feedbackSingle');
+        fb.style.display = 'block';
 
         if(isCorrect) {
-            feedbackEl.className = 'feedback correct';
-            feedbackEl.innerText = "Paráda! Všechno máš naprosto správně. 🚀";
-            document.getElementById('checkBtn').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'inline-block';
+            fb.className = 'feedback correct';
+            fb.innerText = "Paráda! Všechno máš naprosto správně. 🚀";
+            document.getElementById('checkBtnSingle').style.display = 'none';
+            document.getElementById('nextBtnSingle').style.display = 'inline-block';
         } else {
-            feedbackEl.className = 'feedback incorrect';
-            feedbackEl.innerText = errorMsg;
+            fb.className = 'feedback incorrect';
+            fb.innerText = errorMsg;
         }
     }
 
-    // Funkce pro zobrazení/skrytí nápovědy
-    function toggleHelp() {
-        const helpBox = document.getElementById('helpBox');
-        if (helpBox.style.display === "block") {
-            helpBox.style.display = "none";
-        } else {
-            helpBox.style.display = "block";
+    // === LOGIKA PRO VLSM TABULKU ===
+    let vlsmOctet = 0;
+
+    function generateVLSM() {
+        vlsmOctet = Math.floor(Math.random() * 256);
+        document.getElementById('vlsm-base').innerText = `192.168.${vlsmOctet}.0 /24`;
+        document.getElementById('feedbackVLSM').style.display = 'none';
+        
+        // Vymazat a resetovat styly políček
+        const fields = ['p', 'n', 'f', 'l', 'b'];
+        for(let i = 1; i <= 4; i++) {
+            fields.forEach(f => {
+                const el = document.getElementById(f + i);
+                el.value = '';
+                el.style.backgroundColor = 'white';
+                el.style.borderColor = '#ccc';
+            });
         }
     }
 
-    window.onload = generateProblem;
+    function checkVLSM() {
+        const base = `192.168.${vlsmOctet}`;
+        // Správné odpovědi vycházejí ze standardního VLSM postupu pro 60, 30, 14 a 2 PC
+        const correctAnswers = [
+            { p: "/26", n: `${base}.0`, f: `${base}.1`, l: `${base}.62`, b: `${base}.63` },
+            { p: "/27", n: `${base}.64`, f: `${base}.65`, l: `${base}.94`, b: `${base}.95` },
+            { p: "/28", n: `${base}.96`, f: `${base}.97`, l: `${base}.110`, b: `${base}.111` },
+            { p: "/30", n: `${base}.112`, f: `${base}.113`, l: `${base}.114`, b: `${base}.115` }
+        ];
+
+        let allCorrect = true;
+
+        for(let i = 0; i < 4; i++) {
+            const row = i + 1;
+            const fields = ['p', 'n', 'f', 'l', 'b'];
+            
+            fields.forEach(fieldId => {
+                const inputEl = document.getElementById(fieldId + row);
+                const userVal = inputEl.value.trim();
+                const correctVal = correctAnswers[i][fieldId];
+
+                if(userVal === correctVal) {
+                    inputEl.style.backgroundColor = '#d4edda';
+                    inputEl.style.borderColor = '#28a745';
+                } else {
+                    inputEl.style.backgroundColor = '#f8d7da';
+                    inputEl.style.borderColor = '#dc3545';
+                    allCorrect = false;
+                }
+            });
+        }
+
+        const fb = document.getElementById('feedbackVLSM');
+        fb.style.display = 'block';
+
+        if(allCorrect) {
+            fb.className = 'feedback correct';
+            fb.innerText = "Excelentní práce! Celá VLSM tabulka sedí. Takhle by to prošlo i u zkoušky. 🏆";
+        } else {
+            fb.className = 'feedback incorrect';
+            fb.innerText = "Někde se stala chybka (červená políčka). Zkontroluj překlepy, velikost skoků a zkus to znovu.";
+        }
+    }
+
+    // Inicializace při startu
+    window.onload = function() {
+        generateSingle();
+        generateVLSM();
+    };
 </script>
 
 </body>
