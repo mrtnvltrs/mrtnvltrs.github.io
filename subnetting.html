@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cisco Trenér: IP Adresace</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .problem-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.3em;
+        }
+        #ip-task {
+            font-weight: bold;
+            color: #000;
+            font-size: 1.2em;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        label {
+            font-weight: 600;
+            width: 45%;
+        }
+        input {
+            width: 50%;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            margin: 0 5px;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #checkBtn { background-color: #28a745; }
+        #nextBtn { background-color: #007bff; display: none; }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: none;
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+        .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Trenér Subnettingu</h1>
+    <p class="subtitle">Vypočítej parametry sítě pro zadanou IP adresu</p>
+
+    <div class="problem-box">
+        Zadaná IP adresa z hostitele:<br>
+        <span id="ip-task">Načítám...</span>
+    </div>
+
+    <div class="input-group">
+        <label for="net">Adresa sítě (Network):</label>
+        <input type="text" id="net" placeholder="např. 192.168.1.0">
+    </div>
+    <div class="input-group">
+        <label for="first">První využitelná IP:</label>
+        <input type="text" id="first" placeholder="např. 192.168.1.1">
+    </div>
+    <div class="input-group">
+        <label for="last">Poslední využitelná IP:</label>
+        <input type="text" id="last" placeholder="např. 192.168.1.62">
+    </div>
+    <div class="input-group">
+        <label for="bcast">Broadcast:</label>
+        <input type="text" id="bcast" placeholder="např. 192.168.1.63">
+    </div>
+
+    <div class="buttons">
+        <button id="checkBtn" onclick="checkAnswers()">Zkontrolovat</button>
+        <button id="nextBtn" onclick="generateProblem()">Další příklad</button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+</div>
+
+<script>
+    let currentTask = {};
+
+    function generateProblem() {
+        // Skryjeme předchozí výsledky a vymažeme pole
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('checkBtn').style.display = 'inline-block';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('net').value = '';
+        document.getElementById('first').value = '';
+        document.getElementById('last').value = '';
+        document.getElementById('bcast').value = '';
+
+        // Generování náhodné sítě (zaměřeno na 4. oktet a prefixy /24 až /30)
+        const octet1 = 192;
+        const octet2 = 168;
+        const octet3 = Math.floor(Math.random() * 256);
+        const randomIP = Math.floor(Math.random() * 256);
+        const cidr = Math.floor(Math.random() * 7) + 24; // Číslo 24 až 30
+
+        const baseIP = `${octet1}.${octet2}.${octet3}`;
+        
+        // Matematika skoku
+        const bitsForHosts = 32 - cidr;
+        const blockSize = Math.pow(2, bitsForHosts);
+        
+        const networkOctet = Math.floor(randomIP / blockSize) * blockSize;
+        const broadcastOctet = networkOctet + blockSize - 1;
+
+        currentTask = {
+            taskStr: `${baseIP}.${randomIP} /${cidr}`,
+            network: `${baseIP}.${networkOctet}`,
+            first: `${baseIP}.${networkOctet + 1}`,
+            last: `${baseIP}.${broadcastOctet - 1}`,
+            broadcast: `${baseIP}.${broadcastOctet}`,
+            skok: blockSize
+        };
+
+        document.getElementById('ip-task').innerText = currentTask.taskStr;
+    }
+
+    function checkAnswers() {
+        const userNet = document.getElementById('net').value.trim();
+        const userFirst = document.getElementById('first').value.trim();
+        const userLast = document.getElementById('last').value.trim();
+        const userBcast = document.getElementById('bcast').value.trim();
+
+        let isCorrect = true;
+        let errorMsg = "Někde je chybka. Správné řešení:\n\n";
+        
+        // Kontrola Adresy sítě
+        if(userNet !== currentTask.network) {
+            isCorrect = false;
+        }
+        errorMsg += `Adresa sítě: ${currentTask.network} (Skok je ${currentTask.skok})\n`;
+
+        // Kontrola První IP
+        if(userFirst !== currentTask.first) {
+            isCorrect = false;
+        }
+        errorMsg += `První IP: ${currentTask.first}\n`;
+
+        // Kontrola Poslední IP
+        if(userLast !== currentTask.last) {
+            isCorrect = false;
+        }
+        errorMsg += `Poslední IP: ${currentTask.last}\n`;
+
+        // Kontrola Broadcastu
+        if(userBcast !== currentTask.broadcast) {
+            isCorrect = false;
+        }
+        errorMsg += `Broadcast: ${currentTask.broadcast}`;
+
+        const feedbackEl = document.getElementById('feedback');
+        feedbackEl.style.display = 'block';
+
+        if(isCorrect) {
+            feedbackEl.className = 'feedback correct';
+            feedbackEl.innerText = "Paráda! Všechno máš naprosto správně. 🚀";
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        } else {
+            feedbackEl.className = 'feedback incorrect';
+            feedbackEl.innerText = errorMsg;
+        }
+    }
+
+    // Vygenerovat první příklad při načtení stránky
+    window.onload = generateProblem;
+</script>
+
+</body>
+</html>
