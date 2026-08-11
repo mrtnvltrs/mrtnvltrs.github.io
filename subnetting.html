@@ -9,7 +9,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
             color: #333;
-            max-width: 600px;
+            max-width: 650px;
             margin: 40px auto;
             padding: 20px;
         }
@@ -95,6 +95,42 @@
         }
         .correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* Styly pro nápovědu */
+        .help-toggle {
+            margin-top: 30px;
+            text-align: center;
+            color: #0056b3;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .help-toggle:hover {
+            background-color: #e9ecef;
+        }
+        .help-box {
+            display: none;
+            margin-top: 15px;
+            padding: 20px;
+            background-color: #fff9e6;
+            border-left: 5px solid #ffc107;
+            border-radius: 6px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .help-box h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .help-box code {
+            background-color: #ffe8a1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -131,13 +167,34 @@
     </div>
 
     <div id="feedback" class="feedback"></div>
+
+    <!-- Interaktivní nápověda -->
+    <div class="help-toggle" onclick="toggleHelp()">🔍 Ukázat postup a nápovědu</div>
+    <div id="helpBox" class="help-box">
+        <h3>Jak na to? (Krok za krokem)</h3>
+        <p>Představ si, že dostaneš zadanou IP adresu: <code>192.168.5.75 /26</code></p>
+        <ol>
+            <li><strong>Urči masku a velikost skoku:</strong> Prefix /26 znamená, že v posledním oktetu masky je hodnota 192 (255.255.255.192). Velikost skoku (magické číslo) spočítáš takto: <strong>256 - 192 = 64</strong>. Sítě tedy skáčou po 64 adresách.</li>
+            <li><strong>Najdi začátek sítě:</strong> Vypiš si násobky skoku: 0, 64, 128, 192. Zadaná IP adresa <code>.75</code> spadá do rozmezí mezi 64 a 127. Adresa tvé sítě je proto <code>192.168.5.64</code>.</li>
+            <li><strong>Urči první IP:</strong> To je vždy o 1 větší než adresa sítě. V našem případě: <code>192.168.5.65</code>.</li>
+            <li><strong>Urči Broadcast:</strong> Je to vždy o 1 menší adresa, než na které začíná DALŠÍ síť. Další síť začíná na 128 (64 + 64), takže Broadcast naší sítě je <code>192.168.5.127</code>.</li>
+            <li><strong>Urči poslední IP:</strong> To je vždy o 1 menší než Broadcast. V našem případě: <code>192.168.5.126</code>.</li>
+        </ol>
+        <p><em>Tahák skoků pro rychlou orientaci:</em><br>
+        /24 = skok 256<br>
+        /25 = skok 128<br>
+        /26 = skok 64<br>
+        /27 = skok 32<br>
+        /28 = skok 16<br>
+        /29 = skok 8<br>
+        /30 = skok 4</p>
+    </div>
 </div>
 
 <script>
     let currentTask = {};
 
     function generateProblem() {
-        // Skryjeme předchozí výsledky a vymažeme pole
         document.getElementById('feedback').style.display = 'none';
         document.getElementById('checkBtn').style.display = 'inline-block';
         document.getElementById('nextBtn').style.display = 'none';
@@ -146,16 +203,14 @@
         document.getElementById('last').value = '';
         document.getElementById('bcast').value = '';
 
-        // Generování náhodné sítě (zaměřeno na 4. oktet a prefixy /24 až /30)
         const octet1 = 192;
         const octet2 = 168;
         const octet3 = Math.floor(Math.random() * 256);
         const randomIP = Math.floor(Math.random() * 256);
-        const cidr = Math.floor(Math.random() * 7) + 24; // Číslo 24 až 30
+        const cidr = Math.floor(Math.random() * 7) + 24; 
 
         const baseIP = `${octet1}.${octet2}.${octet3}`;
         
-        // Matematika skoku
         const bitsForHosts = 32 - cidr;
         const blockSize = Math.pow(2, bitsForHosts);
         
@@ -183,28 +238,16 @@
         let isCorrect = true;
         let errorMsg = "Někde je chybka. Správné řešení:\n\n";
         
-        // Kontrola Adresy sítě
-        if(userNet !== currentTask.network) {
-            isCorrect = false;
-        }
+        if(userNet !== currentTask.network) isCorrect = false;
         errorMsg += `Adresa sítě: ${currentTask.network} (Skok je ${currentTask.skok})\n`;
 
-        // Kontrola První IP
-        if(userFirst !== currentTask.first) {
-            isCorrect = false;
-        }
+        if(userFirst !== currentTask.first) isCorrect = false;
         errorMsg += `První IP: ${currentTask.first}\n`;
 
-        // Kontrola Poslední IP
-        if(userLast !== currentTask.last) {
-            isCorrect = false;
-        }
+        if(userLast !== currentTask.last) isCorrect = false;
         errorMsg += `Poslední IP: ${currentTask.last}\n`;
 
-        // Kontrola Broadcastu
-        if(userBcast !== currentTask.broadcast) {
-            isCorrect = false;
-        }
+        if(userBcast !== currentTask.broadcast) isCorrect = false;
         errorMsg += `Broadcast: ${currentTask.broadcast}`;
 
         const feedbackEl = document.getElementById('feedback');
@@ -221,7 +264,16 @@
         }
     }
 
-    // Vygenerovat první příklad při načtení stránky
+    // Funkce pro zobrazení/skrytí nápovědy
+    function toggleHelp() {
+        const helpBox = document.getElementById('helpBox');
+        if (helpBox.style.display === "block") {
+            helpBox.style.display = "none";
+        } else {
+            helpBox.style.display = "block";
+        }
+    }
+
     window.onload = generateProblem;
 </script>
 
