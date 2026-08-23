@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Martinův web</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome pro loga sociálních sítí -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #10a37f;
@@ -131,11 +133,11 @@
         }
 
         body[data-os="windows"]::after {
-            background-image: url('https://cdn-icons-png.flaticon.com/128/732/732225.png');
+            background-image: url('<unsafe_url>https://cdn-icons-png.flaticon.com/128/732/732225.png'</unsafe_url>);
         }
 
         body[data-os="macos"]::after {
-            background-image: url('https://cdn-icons-png.flaticon.com/128/2/2235.png');
+            background-image: url('<unsafe_url>https://cdn-icons-png.flaticon.com/128/2/2235.png'</unsafe_url>);
         }
 
         /* Hlavní obsah */
@@ -193,6 +195,51 @@
             box-shadow: 0 6px 12px rgba(16, 163, 127, 0.3);
         }
 
+        /* Sociální sítě */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .social-btn i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            color: white;
+            border-color: transparent;
+        }
+
+        .social-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .social-btn.instagram:hover { background: #E1306C; }
+        .social-btn.threads:hover { background: #000000; }
+        .social-btn.discord:hover { background: #5865F2; }
+        .social-btn.steam:hover { background: #171a21; }
+
         /* Animace */
         @keyframes slideDown {
             from { transform: translateY(-100%); }
@@ -234,6 +281,21 @@
             <a href="innsbruck.html" class="cta-button">
                 Otevřít vyúčtování a mapy Innsbruck
             </a>
+
+            <div class="social-links">
+                <a href="#" class="social-btn instagram">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+                <a href="#" class="social-btn threads">
+                    <i class="fa-brands fa-threads"></i> Threads
+                </a>
+                <a href="#" class="social-btn discord">
+                    <i class="fa-brands fa-discord"></i> Discord
+                </a>
+                <a href="#" class="social-btn steam">
+                    <i class="fa-brands fa-steam"></i> Steam
+                </a>
+            </div>
         </div>
     </main>
 
